@@ -1652,6 +1652,7 @@
         }
         // if no errors run the full test loop
         if (!clone.error) {
+          console.log('running with count:',bench.count);
           compiled = bench.compiled = clone.compiled = createCompiled(bench, deferred, funcBody);
           result = compiled.call(deferred || bench, context, timer).elapsed;
         }
@@ -1869,7 +1870,8 @@
           initCount = bench.initCount,
           minSamples = bench.minSamples,
           queue = [],
-          sample = bench.stats.sample;
+          sample = bench.stats.sample,
+          sampleTimes = bench.sampleTimes;
 
       /**
        * Adds a clone to the queue.
@@ -1921,6 +1923,7 @@
        * Determines if more clones should be queued or if cycling should stop.
        */
       function evaluate(event) {
+
         var critical,
             df,
             mean,
@@ -1936,6 +1939,8 @@
             maxedOut = size >= minSamples && (elapsed += now - clone.times.timeStamp) / 1e3 > bench.maxTime,
             times = bench.times,
             varOf = function(sum, x) { return sum + pow(x - mean, 2); };
+        sampleTimes.push({'start': clone.sampleStart,
+                          'end': clone.sampleStop});
 
         // exit early for aborted or unclockable tests
         if (done || clone.hz == Infinity) {
@@ -2016,6 +2021,7 @@
      * @param {Object} options The options object.
      */
     function cycle(clone, options) {
+      console.log('cycling', clone, clone.running);
       options || (options = {});
 
       var deferred;
@@ -2039,7 +2045,9 @@
       if (clone.running) {
         // `minTime` is set to `Benchmark.options.minTime` in `clock()`
         cycles = ++clone.cycles;
+        clone.sampleStart = window.performance.now();
         clocked = deferred ? deferred.elapsed : clock(clone);
+        clone.sampleStop = window.performance.now();
         minTime = clone.minTime;
 
         if (cycles > bench.cycles) {
@@ -2067,6 +2075,7 @@
         bench.initCount = clone.initCount = count;
         // do we need to do another cycle?
         clone.running = clocked < minTime;
+        if (!clone.running) { console.log('min time'); }
 
         if (clone.running) {
           // tests may clock at `0` when `initCount` is a small number,
@@ -2079,6 +2088,7 @@
             count += Math.ceil((minTime - clocked) / period);
           }
           clone.running = count != Infinity;
+          if (!clone.running) { console.log('inf count');}
         }
       }
       // should we exit early?
@@ -2550,6 +2560,10 @@
          */
         'variance': 0
       },
+
+      'sampleStart': undefined,
+      'sampleStop': undefined,
+      'sampleTimes': [],
 
       /**
        * An object of timing data including cycle, elapsed, period, start, and stop.
