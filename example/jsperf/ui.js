@@ -547,9 +547,10 @@
     setHTML('run', texts.run.running);
   })
   .on('complete', function() {
-    console.log(JSON.stringify(ui.benchmarks[0].stats));
+    ui.benchmarks[0]['sampleTimes'] = ui.benchmarks[0].sampleTimes;
+    console.log(JSON.stringify(ui.benchmarks[0]));
 
-    console.log(JSON.stringify(ui.benchmarks[0].sampleTimes));
+    //console.log(JSON.stringify(ui.benchmarks[0].sampleTimes));
     var benches = filter(ui.benchmarks, 'successful'),
         fastest = filter(benches, 'fastest'),
         slowest = filter(benches, 'slowest');

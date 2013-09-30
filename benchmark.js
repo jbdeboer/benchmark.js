@@ -1940,7 +1940,9 @@
             times = bench.times,
             varOf = function(sum, x) { return sum + pow(x - mean, 2); };
         sampleTimes.push({'start': clone.sampleStart,
-                          'end': clone.sampleStop});
+                          'end': clone.sampleStop,
+                          'ops': clone.count,
+                          'sample': clone.times.period});
 
         // exit early for aborted or unclockable tests
         if (done || clone.hz == Infinity) {
