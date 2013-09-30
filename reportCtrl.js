@@ -19,13 +19,33 @@ function init() {
 function Report($scope) {
 	var bs = [];
 
+  var timeScaling;
+
 	var suite = new Benchmark.Suite('Sorting', {
 		onComplete: function() {
+      var maxElasped = 0;
+
 			for (var i = 0; i < suite.length; i++) {
-				var s = {}
-				compute(s, suite[i]);
+        var b = suite[i];
+        // calculate the overall max-time
+        var startTime = b.sampleTimes[0].start;
+        var endTime = b.sampleTimes[b.sampleTimes.length - 1].end;
+        var elasped = endTime - startTime;
+        if (elasped > maxElasped) maxElasped = elasped;
+        console.log('elasped', i, elasped);
+      }
+
+      console.log('maxElasped', maxElasped);
+
+      timeScaling = 500 / maxElasped;
+
+      for (i = 0; i < suite.length; i++) {
+        b = suite[i];
+				var s = {};
+				compute(s, b);
 				bs.push(s);
 			}
+
       $scope.isRunning = false;
 			console.log('complete', arguments, suite); $scope.$apply();
 			console.log('scope', $scope);
@@ -43,15 +63,15 @@ function Report($scope) {
 			return a - b;\n\
 		});\n\
 		return;'
-	);
-  /*
+	)
+
 	.add('Async', {
 		'defer': true,
 		'fn': '\
 			setTimeout(function() {\n\
 				deferred.resolve();\n\
 			}, 10);'
-	})
+	}); /*
 	.add('Error', '\
 		x.foo(); // unknown method'
 	)
@@ -122,7 +142,7 @@ function Report($scope) {
 
 
 	    var width = 500;
-	    var scaling = 500 / (endTime - startTime);
+	    var scaling = timeScaling;
 		var segs = [];
 		var minSeg, maxSeg;
 		for (var i = 0; i < times.length; i++) {
