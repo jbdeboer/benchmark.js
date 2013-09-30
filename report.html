@@ -68,13 +68,14 @@
 
 </head>
 <body ng-app ng-controller="Report">
-	<div><a ng-click="runTests()">Run Tests</a></div>
+  <div class="benchmark-run">Sorting Benchmarks</div>
+	<div class="benchmark-run"><a href="#" ng-click="runTests()">Run Tests</a> <span ng-show="isRunning">running...</span></div>
 
     <div ng-repeat="b in bs" class="benchmark-run">
 		{{b.b.name}} benchmark. {{b.samples.length}} cycles.
 
-		<div ng-style="{'margin-left':maxSeg.x}">
-			max {{b.maxSeg.sample|number:0}} ops/sec
+		<div ng-style="{'margin-left':b.maxSeg.x}">
+			max {{b.maxSeg.sample|number:0}} ops/sec. {{b.maxSeg.ops}} ops. {{ b.maxSeg.time|number:2 }} ms.
 		</div>
 		
 
@@ -92,7 +93,7 @@
 		</div>
 
 		<div ng-style="{'margin-left':b.minSeg.x}">
-			min {{b.minSeg.sample|number:0}} ops/sec
+			min {{b.minSeg.sample|number:0}} ops/sec {{b.minSeg.ops}} ops. {{ b.minSeg.time|number:2 }} ms.
 		</div>
 	</div>
 </body>

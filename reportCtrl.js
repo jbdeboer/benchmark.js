@@ -26,6 +26,7 @@ function Report($scope) {
 				compute(s, suite[i]);
 				bs.push(s);
 			}
+      $scope.isRunning = false;
 			console.log('complete', arguments, suite); $scope.$apply();
 			console.log('scope', $scope);
 		}
@@ -42,7 +43,8 @@ function Report($scope) {
 			return a - b;\n\
 		});\n\
 		return;'
-	)
+	);
+  /*
 	.add('Async', {
 		'defer': true,
 		'fn': '\
@@ -59,7 +61,7 @@ function Report($scope) {
 			return a - b;\n\
 		});\n\
 		// comments at end'
-	);
+	); */
 
 	Benchmark.prototype.setup = '\
 		window.foo = 42;\n\
@@ -70,6 +72,7 @@ function Report($scope) {
 
 	$scope.runTests = function() {
 		suite.run({ 'async': true });
+    $scope.isRunning = true;
 	}
 
 	$scope.bs = bs;
@@ -128,7 +131,9 @@ function Report($scope) {
 			var r = {x: (t.start - startTime) * scaling,
 			           y: (maxOps - ops(t)) * opsScaling,
 			           w: e * scaling,
-			           sample: ops(t)};
+			           sample: ops(t),
+                 ops: t.ops,
+                 time: e};
 			segs.push(r);
 			if (ops(t) == minOps) minSeq = r;
 			if (ops(t) == maxOps) maxSeq = r;

@@ -388,6 +388,9 @@
 
       bench.stats = cloneDeep(bench.stats);
       bench.times = cloneDeep(bench.times);
+      bench.sampleTimes = cloneDeep(bench.sampleTimes);
+      bench.sampleStart = cloneDeep(bench.sampleStart);
+      bench.sampleStop = cloneDeep(bench.sampleStop);
     }
 
     /**
@@ -1941,6 +1944,7 @@
             maxedOut = size >= minSamples && (elapsed += now - clone.times.timeStamp) / 1e3 > bench.maxTime,
             times = bench.times,
             varOf = function(sum, x) { return sum + pow(x - mean, 2); };
+        console.log('onCycle sampleTimes');
         sampleTimes.push({'start': clone.sampleStart,
                           'end': clone.sampleStop,
                           'ops': clone.count,
