@@ -113,6 +113,7 @@
     var _ = context && context._ || req('lodash') || root._;
     if (!_) {
       Benchmark.runInContext = runInContext;
+      console.log('cannot load lodash');
       return Benchmark;
     }
     // Avoid issues with some ES3 environments that attempt to use values, named
@@ -459,6 +460,7 @@
      *   'onComplete': onComplete
      * });
      */
+     console.log('hello');
     function Suite(name, options) {
       var suite = this;
 
@@ -2798,6 +2800,7 @@
     /*------------------------------------------------------------------------*/
 
     // expose Deferred, Event, and Suite
+    console.log('bben');
     _.extend(Benchmark, {
       'Deferred': Deferred,
       'Event': Event,
@@ -2854,6 +2857,7 @@
     });
   }
   else {
+    console.log('ric');
     var Benchmark = runInContext();
 
     // check for `exports` after `define` in case a build optimizer adds an `exports` object
@@ -2872,4 +2876,6 @@
       root.Benchmark = Benchmark;
     }
   }
+  console.log('bb');
 }(this));
+console.log('benchmark', this);

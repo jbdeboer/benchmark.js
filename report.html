@@ -1,9 +1,12 @@
 <html>
 <head>
 	<script type="text/javascript" src="angular.min.js"></script>
-	<script src="sampleTimes.js"></script>
+	<script src="vendor/lodash/lodash.js"></script>
+
+	<script src="benchmark.js"></script>
+
 	<script src="reportCtrl.js"></script>
-	<link rel="stylesheet" href="reset/_/css/reset.css">
+	<!--<link rel="stylesheet" href="reset/_/css/reset.css">-->
 	<style>
 	body {
 		margin: 3em;
@@ -57,32 +60,40 @@
         display: block; 
         clear: both;
 	}
+
+	.benchmark-run {
+		margin: 2em 0;
+	}
 	</style>
 
 </head>
 <body ng-app ng-controller="Report">
-	{{b.name}} benchmark. {{samples.length}} cycles.
+	<div><a ng-click="runTests()">Run Tests</a></div>
 
-	<div ng-style="{'margin-left':maxSeg.x}">
-		max {{maxSeg.sample|number:0}} ops/sec
-	</div>
-	
+    <div ng-repeat="b in bs" class="benchmark-run">
+		{{b.b.name}} benchmark. {{b.samples.length}} cycles.
 
-	<div class="timeline" ng-style="{width: 500, height: maxOps-minOps+2}">
+		<div ng-style="{'margin-left':maxSeg.x}">
+			max {{b.maxSeg.sample|number:0}} ops/sec
+		</div>
+		
 
-		<div class="mean" ng-style="{top:maxOps-avg, width:500}"></div>
-		<div class="mean-label" ng-style="{top:maxOps-avg-10, width:500}" >mean {{avgValue | number:0}} ops/sec</div>
-		<div ng-repeat="s in segs" class="segment" ng-style="{top:s.y, 'margin-left':s.x}">
-			<div class="segment-inner">
-				<div class="seg-ball"></div>
-				<div class="seg-line" ng-style="{width:s.w}"></div>
-				<div class="seg-ball" ng-style="{'margin-left': s.w-1}"></div>	
+		<div class="timeline" ng-style="{width: 500, height: b.maxOps-b.minOps+2}">
+
+			<div class="mean" ng-style="{top:b.maxOps-b.avg, width:500}"></div>
+			<div class="mean-label" ng-style="{top:b.maxOps-b.avg-10, width:500}" >mean {{b.avgValue | number:0}} ops/sec</div>
+			<div ng-repeat="s in b.segs" class="segment" ng-style="{top:s.y, 'margin-left':s.x}">
+				<div class="segment-inner">
+					<div class="seg-ball"></div>
+					<div class="seg-line" ng-style="{width:s.w}"></div>
+					<div class="seg-ball" ng-style="{'margin-left': s.w-1}"></div>	
+				</div>
 			</div>
 		</div>
-	</div>
 
-	<div ng-style="{'margin-left':minSeg.x}">
-		min {{minSeg.sample|number:0}} ops/sec
+		<div ng-style="{'margin-left':b.minSeg.x}">
+			min {{b.minSeg.sample|number:0}} ops/sec
+		</div>
 	</div>
 </body>
 </html>
