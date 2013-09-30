@@ -1,0 +1,20 @@
+NOTES
+
+-> benchmark calls 'cycle' multiple times, which fills in the 'times' object in the
+->   output.
+
+Where does 'sample' come from?
+  -> a cycle may "continue" but calling cycle() again, but that is not the
+     end of the cycle...
+
+     When cycle.running != true, benchmark copies samples into the stats object.
+
+
+
+-----
+
+v1 shows time on the x and time on the y.
+
+v2:
+ -> show ops/sec on the y, time on the x.
+ -> max and min.
