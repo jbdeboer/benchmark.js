@@ -403,6 +403,9 @@
 
       bench.stats = cloneDeep(bench.stats);
       bench.times = cloneDeep(bench.times);
+      bench.sampleTimes = cloneDeep(bench.sampleTimes);
+      bench.sampleStart = cloneDeep(bench.sampleStart);
+      bench.sampleStop = cloneDeep(bench.sampleStop);
     }
 
     /**
@@ -1745,7 +1748,7 @@
 
         timer.stop = createFunction(
           interpolate('o#'),
-          interpolate('var n#=this.ns,s#=o#.timeStamp,${end};o#.elapsed=r#')
+          interpolate('var n#=this.ns,s#=o#.timeStamp,${end};o#.elapsed=r#;${begin};o#.endTimeStamp=s#')
         );
 
         // create compiled test
@@ -1892,7 +1895,8 @@
           initCount = bench.initCount,
           minSamples = bench.minSamples,
           queue = [],
-          sample = bench.stats.sample;
+          sample = bench.stats.sample,
+          sampleTimes = bench.sampleTimes;
 
       /**
        * Adds a clone to the queue.
@@ -1959,6 +1963,10 @@
             maxedOut = size >= minSamples && (elapsed += now - clone.times.timeStamp) / 1e3 > bench.maxTime,
             times = bench.times,
             varOf = function(sum, x) { return sum + pow(x - mean, 2); };
+        sampleTimes.push({'start': clone.sampleStart,
+                          'end': clone.sampleStop,
+                          'ops': clone.count,
+                          'sample': clone.times.period});
 
         // exit early for aborted or unclockable tests
         if (done || clone.hz == Infinity) {
@@ -2062,7 +2070,17 @@
       if (clone.running) {
         // `minTime` is set to `Benchmark.options.minTime` in `clock()`
         cycles = ++clone.cycles;
+        // TODO(deboer): Use a better timer...
+        var clockStart = window.performance.now();
         clocked = deferred ? deferred.elapsed : clock(clone);
+        var clockStop = window.performance.now();
+        if (deferred) {
+          clone.sampleStart = deferred.timeStamp;
+          clone.sampleStop = deferred.endTimeStamp;
+        } else {
+          clone.sampleStart = clockStart;
+          clone.sampleStop = clockStop;
+        }
         minTime = clone.minTime;
 
         if (cycles > bench.cycles) {
@@ -2573,6 +2591,10 @@
          */
         'variance': 0
       },
+
+      'sampleStart': undefined,
+      'sampleStop': undefined,
+      'sampleTimes': [],
 
       /**
        * An object of timing data including cycle, elapsed, period, start, and stop.
